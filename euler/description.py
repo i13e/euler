@@ -45,7 +45,7 @@ def get_images(problem_description):
         if img_url:
             img_response = requests.get(BASE_URL + img_url)
             if img_response.status_code == 200:
-                img_filename = os.path.basename(img_url)
+                img_filename = img_tag["alt"]
                 img_path = os.path.join(RESOURCES_DIR, img_filename)
                 with open(img_path, "wb") as img_file:
                     img_file.write(img_response.content)

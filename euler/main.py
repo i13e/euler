@@ -17,7 +17,7 @@ def create_problem_file(problem_number: int, description_text: str) -> int:
     """
 
     # Create a filename based on the problem_number
-    filename = f"{problem_number:03d}.md"
+    filename = f"{problem_number:04d}.md"
 
     # Write the description to the markdown file
     try:
