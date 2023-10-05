@@ -42,7 +42,7 @@ def create_python_file(problem_number: int) -> int:
     """
 
     # Create a filename based on the problem_number
-    filename = f'{problem_number:03d}.py'
+    filename = f'{problem_number:04d}.py'
 
     # Create the Python file content
     python_code = f'''\
@@ -51,7 +51,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print(main())
 '''
 
     # Write the Python code to the file
