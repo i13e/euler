@@ -1,7 +1,10 @@
 import argparse
 import os
 
-from euler.description import get_description
+import click
+
+from euler.problem_fetcher import fetch_problem
+from euler.verify import ANSWERS, verify, verify_all
 
 
 def create_problem_file(problem_number: int, description_text: str) -> int:
@@ -30,7 +33,7 @@ def create_problem_file(problem_number: int, description_text: str) -> int:
         return 1
 
 
-def create_python_file(problem_number: int) -> int:
+def create_python_file(number: int, extension: str = ".py") -> int:
     """
     Create a Python solution file with a template.
 
@@ -42,7 +45,7 @@ def create_python_file(problem_number: int) -> int:
     """
 
     # Create a filename based on the problem_number
-    filename = f'{problem_number:04d}.py'
+    filename = f'{number:04d}{extension}'
 
     # Create the Python file content
     python_code = f'''\
@@ -73,7 +76,7 @@ def find_missing_problem() -> int:
         int: The first missing problem number.
     """
     problem_number = 1
-    while os.path.exists(f"{problem_number:03d}.md"):
+    while os.path.exists(f"{problem_number:03d}.py"):
         problem_number += 1
     return problem_number
 
@@ -90,12 +93,7 @@ def main() -> None:
         print("No Project Euler files found in the current directory.")
     generate_file = input(f"Generate file for problem {problem_number}? [Y/n]: ").strip().lower()
     if generate_file != 'n':
-        description_text = get_description(problem_number)
-        create_problem_file(problem_number, description_text)
+        fetch_problem(problem_number)
         create_python_file(problem_number)
     else:
         print("Aborted!")
-
-
-if __name__ == "__main__":
-    main()
