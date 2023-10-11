@@ -1,4 +1,5 @@
 [![main](https://github.com/i13e/euler/actions/workflows/main.yml/badge.svg)](https://github.com/i13e/euler/actions/workflows/main.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/i13e/euler/master.svg)](https://results.pre-commit.ci/latest/github/i13e/euler/master)
 
 # Euler
 
