@@ -5,6 +5,7 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
+    -   id: check-toml
     -   id: debug-statements
     -   id: name-tests-test
     -   id: requirements-txt-fixer
@@ -34,4 +35,4 @@ repos:
     rev: v1.5.1
     hooks:
     -   id: mypy
-        additional_dependencies: [types-requests==2.31.0]
+        additional_dependencies: [types-requests]

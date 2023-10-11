@@ -1,99 +1,73 @@
-import argparse
-import os
+from __future__ import annotations
+
+from typing import Callable
 
 import click
 
-from euler.problem_fetcher import fetch_problem
-from euler.verify import ANSWERS, verify, verify_all
+from euler.problem import fetch
+from euler.utils import Problem
+from euler.utils import problem_glob
+from euler.verify import cheat
+from euler.verify import verify
+from euler.verify import verify_all
 
 
-def create_problem_file(problem_number: int, description_text: str) -> int:
-    """
-    Create a markdown problem description file.
+def euler_commands(fn: Callable[..., int]) -> Callable[[int], int]:
+    """Decorator to link CLI options with their appropriate functions"""
+    euler_functions = cheat, fetch, verify, verify_all
 
-    Args:
-        problem_number (int): The problem number.
-        description_text (str): The description text to write to the file.
+    # Reverse functions to print help page options in alphabetical order
+    for option in reversed(euler_functions):
+        name, docstring = option.__name__, option.__doc__
+        kwargs = {"flag_value": option, "help": docstring}
 
-    Returns:
-        int: 0 if the file creation is successful, 1 if there's an error.
-    """
+        # Apply flag(s) depending on whether or not name is a single word
+        flag = f"--{name.replace('_', '-')}"
+        flags = [flag] if "_" in name else [flag, f"-{name[0]}"]
 
-    # Create a filename based on the problem_number
-    filename = f"{problem_number:04d}.md"
+        fn = click.option(
+            "command", *flags, **kwargs,
+            type=click.UNPROCESSED,
+        )(fn)
 
-    # Write the description to the markdown file
-    try:
-        with open(filename, "w") as markdown_file:
-            markdown_file.write(description_text)
-        print(f"Successfully created '{filename}'.")
-        return 0
-    except IOError as e:
-        print(f"Error creating '{filename}': {e}")
-        return 1
+    return fn
 
 
-def create_python_file(number: int, extension: str = ".py") -> int:
-    """
-    Create a Python solution file with a template.
+@click.command(name="euler", options_metavar="[OPTION]")
+@click.argument("problem", default=0, type=click.IntRange(min=0))
+@euler_commands
+def main(command: Callable[[int], int], problem: int) -> int:
+    """Python-based Project Euler command line tool."""
 
-    Args:
-        problem_number (int): The problem number.
+    # No problem number provided
+    if not problem:
+        # Determine the max problem number in the current directory
+        problem = max((file.num for file in problem_glob()), default=0)
 
-    Returns:
-        int: 0 if the file creation is successful, 1 if there's an error.
-    """
+        # No Project Euler files in current directory
+        if not problem:
+            if command != cheat:
+                msg = "No Project Euler files found in the current directory."
+                click.echo(msg)
+                if command == verify_all:
+                    raise SystemExit(1)
+                command = fetch
 
-    # Create a filename based on the problem_number
-    filename = f'{number:04d}{extension}'
+            problem = 1
 
-    # Create the Python file content
-    python_code = f'''\
-def main():
-    pass
+        # found problem, no option; generate next file if answer is correct
+        if command is None:
+            verify(problem)
+            problem += 1
+            command = fetch
+
+    # Problem given but no option; decide between generate and verify
+    elif command is None:
+        command = verify if Problem(problem).glob else fetch
+
+    # Execute function based on option
+    raise SystemExit(command(problem))
 
 
 if __name__ == "__main__":
-    print(main())
-'''
-
-    # Write the Python code to the file
-    try:
-        with open(filename, 'w') as file:
-            file.write(python_code)
-        print(f"Successfully created '{filename}'.")
-        return 0
-    except IOError as e:
-        print(f"Error creating '{filename}': {e}")
-        return 1
-
-
-def find_missing_problem() -> int:
-    """
-    Find the first missing problem number by checking existing filenames.
-
-    Returns:
-        int: The first missing problem number.
-    """
-    problem_number = 1
-    while os.path.exists(f"{problem_number:03d}.py"):
-        problem_number += 1
-    return problem_number
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Scrape and display a Project Euler problem description.")
-    parser.add_argument("problem_number", type=int, nargs="?", help="The number of the Project Euler problem to scrape")
-    args = parser.parse_args()
-
-    # If no problem number is provided, find the first missing problem
-    problem_number = args.problem_number or find_missing_problem()
-
-    if not args.problem_number and problem_number == 1:
-        print("No Project Euler files found in the current directory.")
-    generate_file = input(f"Generate file for problem {problem_number}? [Y/n]: ").strip().lower()
-    if generate_file != 'n':
-        fetch_problem(problem_number)
-        create_python_file(problem_number)
-    else:
-        print("Aborted!")
+    raise SystemExit(main())
