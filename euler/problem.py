@@ -9,11 +9,6 @@ from bs4 import BeautifulSoup
 from bs4 import Tag
 
 from euler.utils import Problem
-# import re
-
-
-class ProblemFetchError(Exception):
-    pass
 
 
 # Constants
@@ -36,36 +31,31 @@ def fetch(number: int) -> int:
         content = soup.find("div", class_="problem_content")
 
         if not (isinstance(title, Tag) and isinstance(content, Tag)):
-            raise ProblemFetchError(
-                f"Problem description not found for problem {number}",
-            )
+            print(f"Problem description not found for problem {number}")
+            return 1
 
         os.makedirs(RESOURCES_DIR, exist_ok=True)
         fetch_images(content)
         fetch_files(content)
         create_solution(number)
 
-        # Convert the text to lowercase and replace spaces with underscores
-        # formatted_text = re.sub(r'[^\w\s]', '', title.text)
-        # formatted_title = formatted_text.lower().replace(" ", "_")
-
         filename = f"{number:04d}.md"
         md_path = os.path.join(RESOURCES_DIR, filename)
         with open(md_path, "w") as md_file:
             md_file.write(f"{title}{content}")
+
         click.secho(f"Successfully created \"{filename}\".", fg="green")
         return 0
 
     except requests.exceptions.HTTPError as e:
-        raise ProblemFetchError(
-            f"HTTP error occurred while retrieving problem {number}: {e}",
-        )
+        print(f"HTTP error occured while retrieving problem {number}: {e}")
+        raise
     except requests.exceptions.RequestException as e:
-        raise ProblemFetchError(
-            f"Request error occurred while retrieving problem {number}: {e}",
-        )
+        print(f"Request error while retrieving problem {number}: {e}")
+        raise
     except Exception as e:
-        raise ProblemFetchError(f"An unexpected error occurred: {e}")
+        print(f"An unexpected error occured: {e}")
+        raise
 
 
 def download_resource(url: str) -> str:
@@ -84,17 +74,14 @@ def download_resource(url: str) -> str:
         click.secho(msg, fg="green")
         return filename
     except requests.exceptions.HTTPError as e:
-        raise ProblemFetchError(
-            f"HTTP error occurred while retrieving {url}: {e}",
-        )
+        print(f"HTTP error occured while retrieving {url}: {e}")
+        raise
     except requests.exceptions.RequestException as e:
-        raise ProblemFetchError(
-            f"Request error occurred while retrieving {url}: {e}",
-        )
+        print(f"Request error while retrieving {url}: {e}")
+        raise
     except Exception as e:
-        raise ProblemFetchError(
-            f"An unexpected error occurred while downloading {url}: {e}",
-        )
+        print(f"An unexpected error occured while retrieving {url}: {e}")
+        raise
 
 
 def fetch_images(content: Tag) -> None:
@@ -126,7 +113,7 @@ def create_solution(number: int, extension: str = ".py") -> int:
     if p.glob:
         filename = str(p.file)
         msg = f"\"{filename}\" already exists. Overwrite?"
-        click.confirm(click.style(msg, fg='red'), abort=True)
+        click.confirm(click.style(msg, fg="red"), abort=True)
     else:
         # Try to keep prefix consistent with existing files
         previous_file = Problem(p.num - 1).file
@@ -150,5 +137,5 @@ if __name__ == "__main__":
         click.secho(f"Successfully created \"{filename}\".", fg='green')
         return 0
     except OSError as e:
-        print(f"Error creating '{filename}': {e}")
-        return 1
+        print(f"Error creating \"{filename}\": {e}")
+        raise

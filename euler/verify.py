@@ -29,14 +29,12 @@ sys.path.append(".")
 
 def verify(num: int) -> int:
     """Verify the solution for a given problem number."""
-    p = Problem(num)
-    file = p.file
 
+    file = Problem(num).file
     if not file:
-        click.secho(f"No file found for problem {p.num}.", fg="red")
+        click.secho(f"No file found for problem {num}.", fg="red")
         return 2
 
-    print(file.stem)
     module = import_module(file.stem)
 
     solution = ANSWERS.get(num)
