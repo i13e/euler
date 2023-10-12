@@ -26,7 +26,9 @@ def euler_commands(fn: Callable[..., int]) -> Callable[[int], int]:
         flags = [flag] if "_" in name else [flag, f"-{name[0]}"]
 
         fn = click.option(
-            "command", *flags, **kwargs,
+            "command",
+            *flags,
+            **kwargs,
             type=click.UNPROCESSED,
         )(fn)
 
@@ -52,7 +54,6 @@ def main(command: Callable[[int], int], problem: int) -> int:
                 if command == verify_all:
                     raise SystemExit(1)
                 command = fetch
-
             problem = 1
 
         # found problem, no option; generate next file if answer is correct

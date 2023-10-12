@@ -27,14 +27,16 @@ def fetch(number: int) -> int:
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, "html.parser")
-        title = soup.find("h2")
         content = soup.find("div", class_="problem_content")
+        title = soup.find("h2")
 
         if not (isinstance(title, Tag) and isinstance(content, Tag)):
             print(f"Problem description not found for problem {number}")
             return 1
 
         os.makedirs(RESOURCES_DIR, exist_ok=True)
+
+        # Fetch images and files
         fetch_images(content)
         fetch_files(content)
         create_solution(number)
@@ -43,8 +45,7 @@ def fetch(number: int) -> int:
         md_path = os.path.join(RESOURCES_DIR, filename)
         with open(md_path, "w") as md_file:
             md_file.write(f"{title}{content}")
-
-        click.secho(f"Successfully created \"{filename}\".", fg="green")
+        click.secho(f'Successfully created "{filename}".', fg="green")
         return 0
 
     except requests.exceptions.HTTPError as e:
@@ -60,28 +61,17 @@ def fetch(number: int) -> int:
 
 def download_resource(url: str) -> str:
     """Download a resource from and save it to the destination directory."""
+    response = requests.get(BASE_URL + url)
+    response.raise_for_status()
 
-    try:
-        response = requests.get(BASE_URL + url)
-        response.raise_for_status()
+    filename = os.path.basename(urlparse(url).path)
+    file_path = os.path.join(RESOURCES_DIR, filename)
+    with open(file_path, "wb") as file:
+        file.write(response.content)
 
-        filename = os.path.basename(urlparse(url).path)
-        file_path = os.path.join(RESOURCES_DIR, filename)
-        with open(file_path, "wb") as file:
-            file.write(response.content)
-
-        msg = f"Copied {filename} to {file_path}."
-        click.secho(msg, fg="green")
-        return filename
-    except requests.exceptions.HTTPError as e:
-        print(f"HTTP error occured while retrieving {url}: {e}")
-        raise
-    except requests.exceptions.RequestException as e:
-        print(f"Request error while retrieving {url}: {e}")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occured while retrieving {url}: {e}")
-        raise
+    msg = f"Copied {filename} to {file_path}."
+    click.secho(msg, fg="green")
+    return filename
 
 
 def fetch_images(content: Tag) -> None:
@@ -112,7 +102,7 @@ def create_solution(number: int, extension: str = ".py") -> int:
     # Allow skipped problem files to be recreated
     if p.glob:
         filename = str(p.file)
-        msg = f"\"{filename}\" already exists. Overwrite?"
+        msg = f'"{filename}" already exists. Overwrite?'
         click.confirm(click.style(msg, fg="red"), abort=True)
     else:
         # Try to keep prefix consistent with existing files
@@ -121,21 +111,17 @@ def create_solution(number: int, extension: str = ".py") -> int:
         filename = p.filename(prefix=prefix, extension=extension)
 
     # Create the Python file content
-    python_code = '''\
+    python_code = """\
 def main():
     pass
 
 
 if __name__ == "__main__":
     print(main())
-'''
+"""
 
     # Write the Python code to the file
-    try:
-        with open(filename, "w") as file:
-            file.write(python_code)
-        click.secho(f"Successfully created \"{filename}\".", fg='green')
-        return 0
-    except OSError as e:
-        print(f"Error creating \"{filename}\": {e}")
-        raise
+    with open(filename, "w") as file:
+        file.write(python_code)
+    click.secho(f'Successfully created "{filename}".', fg="green")
+    return 0
