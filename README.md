@@ -13,4 +13,39 @@ This versatile tool is centered around four primary functions:
 
 ## Getting Started
 
-...
+To begin, clone the Git repository by entering the following command in your
+terminal/command prompt:
+
+```sh
+git clone https://github.com/i13e/euler.git
+```
+
+Once you have cloned the repository, navigate to its directory and create a new
+Python virtual environment by running:
+
+```sh
+cd euler
+python -m venv env
+```
+
+Activate the environment by running either of the following commands based on
+your operating system:
+
+```sh
+source env/bin/activate # Mac or Linux
+env\Scripts\activate # Windows
+```
+
+Next, install the packages listed in the `requirements.txt` file using the
+following command:
+
+```sh
+pip install -r requirements.txt
+```
+
+You're now ready to go! Once you've finished, you can exit the
+environment by running the following command (or simply close the terminal):
+
+```sh
+deactivate
+```
