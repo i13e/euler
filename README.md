@@ -11,7 +11,7 @@ This versatile tool is centered around four primary functions:
 3. **Solution Validation**: Verify the correctness of your solutions to Project Euler problems, ensuring that you're on the right track.
 4. **Utility Functions**: Access a range of utility functions that can aid you in tackling complex problems more effectively.
 
-## Getting Started
+## Installation
 
 To begin, clone the Git repository by entering the following command in your
 terminal/command prompt:
@@ -49,3 +49,7 @@ environment by running the following command (or simply close the terminal):
 ```sh
 deactivate
 ```
+
+## Usage
+
+## Contributing
