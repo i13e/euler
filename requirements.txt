@@ -1,4 +1,4 @@
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 click==8.1.7
 humanize==4.9.0
 pre-commit
