@@ -17,7 +17,7 @@ keywords = ["project-euler"]
 dependencies = [
   "beautifulsoup4==4.12.3",
   "click==8.1.7",
-  "humanize==4.10.0",
+  "humanize==4.11.0",
   "requests==2.32.3",
 ]
 classifiers = [
