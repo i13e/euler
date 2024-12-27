@@ -1,12 +1,18 @@
 # https://www.webucator.com/article/python-clocks-explained/
 from __future__ import annotations
 
+import contextlib
 import glob
 import re
+import time
+from collections.abc import Generator
 from datetime import timedelta
 from pathlib import Path
 
+import click
 from humanize import precisedelta
+
+# import sys
 
 
 # Filenames follow the format (prefix, number, suffix, extension)
@@ -65,15 +71,24 @@ class ProblemFile:
 
 def problem_glob(extension: str = ".py") -> list[ProblemFile]:
     """Retrieve a list of ProblemFile objects for all valid problem files"""
-    # TODO: Match with 4 numbers
-    filenames = glob.glob(f"*[0-9][0-9][0-9]*{extension}")
+    filenames = glob.glob(f"*[0-9][0-9][0-9][0-9]*{extension}")
     return list(map(lambda file: ProblemFile(Path(file)), filenames))
 
 
-def format_time(start: float, end: float) -> str:
-    """Format the time elapsed as a human-readable string"""
+@contextlib.contextmanager
+def timing(name: str = "") -> Generator[None]:
+    """Get the time elapsed and format as a human-readable string"""
+    start: float = time.perf_counter()
+    try:
+        yield
+    finally:
+        end: float = time.perf_counter()
+
     elapsed_time_seconds = end - start
     elapsed_time = timedelta(seconds=elapsed_time_seconds)
     human_time = precisedelta(elapsed_time, minimum_unit="microseconds")
+    if name:
+        name = f" ({name})"
 
-    return f"Time elapsed: {human_time}"
+    # print(f"Time elapsed: {human_time}", file=sys.stderr, flush=True)
+    click.secho(f"Time elapsed: {human_time}", fg="cyan")

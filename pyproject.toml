@@ -7,6 +7,7 @@ euler = ["solutions.txt"]
 
 [project]
 name = "euler"
+dynamic = ["dependencies"]
 version = "0.1.0"
 description = ""
 authors = [{ name = "Ian Breckenridge", email = "i13e@i13e.org" }]
@@ -14,12 +15,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
 keywords = ["project-euler"]
-dependencies = [
-  "beautifulsoup4==4.12.3",
-  "click==8.1.8",
-  "humanize==4.11.0",
-  "requests==2.32.3",
-]
+
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
@@ -37,3 +33,6 @@ euler = "euler.main:main"
 "Homepage" = "https://github.com/i13e/euler"
 "Documentation" = "https://github.com/i13e/euler/wiki"
 "Bug Tracker" = "https://github.com/i13e/euler/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

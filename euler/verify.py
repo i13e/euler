@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+import importlib
 import sys
-import time
-from importlib import import_module
 from pathlib import Path
 
 import click
 
-from euler.utils import format_time
 from euler.utils import Problem
 from euler.utils import problem_glob
+from euler.utils import timing
 
 
 # Store problem answers
@@ -19,7 +18,7 @@ ANSWERS: dict[int, str] = {}
 solutions = Path(__file__).parent / "solutions.txt"
 with solutions.open() as file:
     for line in file:
-        parts = line.strip().split()
+        parts = line.strip().split(maxsplit=1)
         if len(parts) == 2:
             num, answer = map(str, parts)
             ANSWERS[int(num)] = answer
@@ -35,7 +34,7 @@ def verify(num: int) -> int:
         click.secho(f"No file found for problem {num}.", fg="red")
         return 2
 
-    module = import_module(file.stem)
+    module = importlib.import_module(file.stem)
 
     solution = ANSWERS.get(num)
     # if solution is None:
@@ -45,21 +44,19 @@ def verify(num: int) -> int:
     #     click.echo('If you have an answer, please submit a PR on GitHub.')
     #     return 3
 
-    click.echo(f"Checking \"{file.name}\" against solution: ", nl=False)
+    click.echo(f'Checking "{file.name}" against solution: ', nl=False)
 
-    start = time.perf_counter()
-    try:
-        actual = str(module.main())
-    except Exception as e:
-        click.secho(f"Error calling \"{file.name}\".", fg="red")
-        click.secho(str(e), fg="red")
-        return 2
-    end = time.perf_counter()
+    with timing():
+        try:
+            actual = str(module.main())
+        except Exception as e:
+            click.secho(f'Error calling "{file.name}".', fg="red")
+            click.secho(str(e), fg="red")
+            return 2
 
-    incorrect = actual != solution
-    fg_color = ["green", "red"][incorrect]
-    click.secho(actual, bold=True, fg=fg_color)
-    click.secho(format_time(start, end), fg="cyan")
+        incorrect = actual != solution
+        fg_color = ["green", "red"][incorrect]
+        click.secho(actual, bold=True, fg=fg_color)
     return incorrect
 
 
