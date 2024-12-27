@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 import click
-
 from euler.utils import Problem
 from euler.utils import problem_glob
 from euler.utils import timing

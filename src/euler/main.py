@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Callable
 
 import click
-
 from euler.problem import fetch
 from euler.utils import Problem
 from euler.utils import problem_glob
