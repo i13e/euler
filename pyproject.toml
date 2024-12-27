@@ -10,10 +10,9 @@ name = "euler"
 dynamic = ["dependencies"]
 version = "0.1.0"
 description = ""
-authors = [{ name = "Ian Breckenridge", email = "i13e@i13e.org" }]
+authors = [{name = "Ian Breckenridge"}]
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
 keywords = ["project-euler"]
 
 classifiers = [
@@ -30,9 +29,9 @@ classifiers = [
 euler = "euler.main:main"
 
 [project.urls]
-"Homepage" = "https://github.com/i13e/euler"
-"Documentation" = "https://github.com/i13e/euler/wiki"
-"Bug Tracker" = "https://github.com/i13e/euler/issues"
+Repository = "https://github.com/i13e/euler"
+Documentation = "https://github.com/i13e/euler/wiki"
+Issues = "https://github.com/i13e/euler/issues"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
