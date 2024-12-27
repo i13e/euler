@@ -6,10 +6,12 @@ import glob
 import re
 import time
 from collections.abc import Generator
+from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
 
 import click
+import requests
 from humanize import precisedelta
 
 # import sys
@@ -92,3 +94,56 @@ def timing(name: str = "") -> Generator[None]:
 
     # print(f"Time elapsed: {human_time}", file=sys.stderr, flush=True)
     click.secho(f"Time elapsed: {human_time}", fg="cyan")
+
+
+@contextlib.contextmanager
+def fetch_data(url, cache_file="solutions.txt", cache_age_days=30):
+    """
+    Fetch and clean data from a URL, caching the result.
+
+    :param url: URL to fetch the data from
+    :param cache_file: Path to the cached file
+    :param cache_age_days: Number of days before cache is considered stale
+    :yield: A file object with cleaned data
+    """
+    cache_dir = Path.home() / ".cache" / "euler"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file_path = cache_dir / cache_file
+
+    def is_cache_valid(file_path):
+        if file_path.exists():
+            last_modified = datetime.fromtimestamp(
+                file_path.stat().st_mtime,
+            )
+            now = datetime.now()
+            return now - last_modified < timedelta(days=cache_age_days)
+        return False
+
+    url = "https://raw.githubusercontent.com/lucky-bai/projecteuler-solutions/refs/heads/master/Solutions.md"  # noqa: E501
+
+    try:
+        if not is_cache_valid(cache_file_path):
+            # Fetch data from the URL
+            # print("Fetching data from URL...")
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an error for bad status codes
+
+            # Clean the data and save to the cache file
+            cleaned_lines = []
+            for line in response.text.splitlines():
+                line = line.strip()
+                if not (line and any(char.isdigit() for char in line)):
+                    continue
+                if "." in line:
+                    line = line.replace(".", "", 1)
+                cleaned_lines.append(line)
+
+            with open(cache_file, "w") as file:
+                file.write("\n".join(cleaned_lines))
+
+        # Open the cache file for reading
+        with open(cache_file) as file:
+            yield file
+
+    finally:
+        pass

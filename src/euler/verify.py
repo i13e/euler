@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import click
+from euler.utils import fetch_data
 from euler.utils import Problem
 from euler.utils import problem_glob
 from euler.utils import timing
@@ -15,7 +16,7 @@ ANSWERS: dict[int, str] = {}
 
 # Load answers from the solutions file
 solutions = Path(__file__).parent / "solutions.txt"
-with solutions.open() as file:
+with fetch_data("") as file:
     for line in file:
         parts = line.strip().split(maxsplit=1)
         if len(parts) == 2:
