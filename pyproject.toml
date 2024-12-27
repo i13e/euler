@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
@@ -7,8 +7,7 @@ euler = ["solutions.txt"]
 
 [project]
 name = "euler"
-dynamic = ["dependencies"]
-version = "0.1.0"
+dynamic = ["version", "dependencies"]
 description = ""
 authors = [{name = "Ian Breckenridge"}]
 readme = "README.md"
@@ -35,3 +34,5 @@ Issues = "https://github.com/i13e/euler/issues"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools_scm]
