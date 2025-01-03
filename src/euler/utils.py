@@ -144,6 +144,3 @@ def fetch_data(url, cache_file="solutions.txt", cache_age_days=30):
         # Open the cache file for reading
         with open(cache_file) as file:
             yield file
-
-    finally:
-        pass
