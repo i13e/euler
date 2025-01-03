@@ -95,50 +95,36 @@ def timing(name: str = "") -> None:
     click.secho(f"Time elapsed: {human_time}", fg="cyan")
 
 
-@contextlib.contextmanager
-def fetch_data(url, cache_file="solutions.txt", cache_age_days=30):
-    """
-    Fetch and clean data from a URL, caching the result.
-
-    :param url: URL to fetch the data from
-    :param cache_file: Path to the cached file
-    :param cache_age_days: Number of days before cache is considered stale
-    :yield: A file object with cleaned data
-    """
+@contextmanager
+def fetch_data(url, cache_file="solutions.json", cache_age_days=7):
     cache_dir = Path.home() / ".cache" / "euler"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file_path = cache_dir / cache_file
 
-    def is_cache_valid(file_path):
-        if file_path.exists():
-            last_modified = datetime.fromtimestamp(
-                file_path.stat().st_mtime,
-            )
-            now = datetime.now()
-            return now - last_modified < timedelta(days=cache_age_days)
-        return False
+    def is_cache_valid():
+        return cache_file_path.exists() and time.time() - cache_file_path.stat().st_mtime < cache_age_days * 86400
 
     url = "https://raw.githubusercontent.com/lucky-bai/projecteuler-solutions/refs/heads/master/Solutions.md"  # noqa: E501
-
-    if not is_cache_valid(cache_file_path):
-        # Fetch data from the URL
-        # print("Fetching data from URL...")
+    
+    if not is_cache_valid():
         response = requests.get(url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
 
-        # Clean the data and save to the cache file
-        cleaned_lines = []
-        for line in response.text.splitlines():
-            line = line.strip()
-            if not (line and any(char.isdigit() for char in line)):
+        # Clean and parse the data into a dictionary
+        d = {}
+        for line in response.text.splitlines()[4:]:
+            try:
+                q, a = line.split(". ", maxsplit=1)
+                d[int(q)] = str(a) 
+            except:
                 continue
-            if "." in line:
-                line = line.replace(".", "", 1)
-            cleaned_lines.append(line)
 
-        with open(cache_file, "w") as file:
-            file.write("\n".join(cleaned_lines))
+        # Save the parsed data as a JSON file
+        with open(cache_file_path, "w") as file:
+            json.dump(solutions, file)
 
-        # Open the cache file for reading
-        with open(cache_file) as file:
-            yield file
+    # Open and load the JSON data, then yield it
+    with open(cache_file_path) as file:
+        # data = json.load(file)
+        # yield data
+        yield file
