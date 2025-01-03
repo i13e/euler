@@ -81,14 +81,14 @@ def problem_glob(extension: str = ".py") -> list[ProblemFile]:
 def timing(name: str = "") -> Generator[None]:
     """Get the time elapsed and format as a human-readable string"""
     start: float = time.perf_counter()
-    try:
-        yield
-    finally:
-        end: float = time.perf_counter()
 
-    elapsed_time_seconds = end - start
-    elapsed_time = timedelta(seconds=elapsed_time_seconds)
+    yield
+
+    end: float = time.perf_counter()
+
+    elapsed_time = timedelta(seconds=(end - start))
     human_time = precisedelta(elapsed_time, minimum_unit="microseconds")
+
     if name:
         name = f" ({name})"
 
