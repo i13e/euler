@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -11,17 +12,9 @@ from euler.utils import problem_glob
 from euler.utils import timing
 
 
-# Store problem answers
-ANSWERS: dict[int, str] = {}
-
 # Load answers from the solutions file
-solutions = Path(__file__).parent / "solutions.txt"
-with fetch_data("") as file:
-    for line in file:
-        parts = line.strip().split(maxsplit=1)
-        if len(parts) == 2:
-            num, answer = map(str, parts)
-            ANSWERS[int(num)] = answer
+with fetch_data() as file:
+    ANSWERS = json.loads(file)
 
 sys.path.append(".")
 
