@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib
 import json
 import sys
-from pathlib import Path
 
 import click
 from euler.utils import fetch_data
@@ -14,7 +13,7 @@ from euler.utils import timing
 
 # Load answers from the solutions file
 with fetch_data() as file:
-    ANSWERS = json.loads(file)
+    ANSWERS = json.load(file)
 
 sys.path.append(".")
 
@@ -29,7 +28,7 @@ def verify(num: int) -> int:
 
     module = importlib.import_module(file.stem)
 
-    solution = ANSWERS.get(num)
+    solution = ANSWERS.get(str(num))
     # if solution is None:
     #     click.secho(f"No solution found for problem {num}.", fg="red")
     #     msg = f'Answer for problem {num} not found in solutions.txt.'
