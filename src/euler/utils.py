@@ -96,7 +96,10 @@ def timing(name: str = "") -> None:
 
 
 @contextmanager
-def fetch_data(url, cache_file="solutions.json", cache_age_days=7):
+def fetch_data():
+    url = "https://raw.githubusercontent.com/lucky-bai/projecteuler-solutions/refs/heads/master/Solutions.md"  # noqa: E501
+    cache_file = "solutions.json"
+    cache_age_days = 7
     cache_dir = Path.home() / ".cache" / "euler"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file_path = cache_dir / cache_file
@@ -104,7 +107,6 @@ def fetch_data(url, cache_file="solutions.json", cache_age_days=7):
     def is_cache_valid():
         return cache_file_path.exists() and time.time() - cache_file_path.stat().st_mtime < cache_age_days * 86400
 
-    url = "https://raw.githubusercontent.com/lucky-bai/projecteuler-solutions/refs/heads/master/Solutions.md"  # noqa: E501
     
     if not is_cache_valid():
         response = requests.get(url)
