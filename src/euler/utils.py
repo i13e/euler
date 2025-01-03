@@ -5,7 +5,6 @@ import contextlib
 import glob
 import re
 import time
-from collections.abc import Generator
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
@@ -78,7 +77,7 @@ def problem_glob(extension: str = ".py") -> list[ProblemFile]:
 
 
 @contextlib.contextmanager
-def timing(name: str = "") -> Generator[None]:
+def timing(name: str = "") -> None:
     """Get the time elapsed and format as a human-readable string"""
     start: float = time.perf_counter()
 
