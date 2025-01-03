@@ -121,25 +121,24 @@ def fetch_data(url, cache_file="solutions.txt", cache_age_days=30):
 
     url = "https://raw.githubusercontent.com/lucky-bai/projecteuler-solutions/refs/heads/master/Solutions.md"  # noqa: E501
 
-    try:
-        if not is_cache_valid(cache_file_path):
-            # Fetch data from the URL
-            # print("Fetching data from URL...")
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an error for bad status codes
+    if not is_cache_valid(cache_file_path):
+        # Fetch data from the URL
+        # print("Fetching data from URL...")
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for bad status codes
 
-            # Clean the data and save to the cache file
-            cleaned_lines = []
-            for line in response.text.splitlines():
-                line = line.strip()
-                if not (line and any(char.isdigit() for char in line)):
-                    continue
-                if "." in line:
-                    line = line.replace(".", "", 1)
-                cleaned_lines.append(line)
+        # Clean the data and save to the cache file
+        cleaned_lines = []
+        for line in response.text.splitlines():
+            line = line.strip()
+            if not (line and any(char.isdigit() for char in line)):
+                continue
+            if "." in line:
+                line = line.replace(".", "", 1)
+            cleaned_lines.append(line)
 
-            with open(cache_file, "w") as file:
-                file.write("\n".join(cleaned_lines))
+        with open(cache_file, "w") as file:
+            file.write("\n".join(cleaned_lines))
 
         # Open the cache file for reading
         with open(cache_file) as file:
