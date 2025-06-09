@@ -2,4 +2,4 @@ beautifulsoup4==4.13.4
 click==8.1.8
 humanize==4.12.3
 pre-commit
-requests==2.32.3
+requests==2.32.4
